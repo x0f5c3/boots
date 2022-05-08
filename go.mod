@@ -3,7 +3,6 @@ module github.com/x0f5c3/boots
 go 1.18
 
 require (
-	github.com/x0f5c3/boots v0.0.0-20220317121501-f31a31ffb302
 	github.com/pterm/pcli v0.4.6
 	github.com/pterm/pterm v0.12.41
 	github.com/spf13/cobra v1.4.0

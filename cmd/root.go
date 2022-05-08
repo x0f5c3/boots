@@ -27,20 +27,28 @@ func Execute() {
 	// Fetch user interrupt
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
+	handleUpdateErr := func() {
+		err := pcli.CheckForUpdates()
+		if err != nil {
+			pterm.Error.Println(err)
+			os.Exit(1)
+		}
+	}
 	go func() {
 		<-c
 		pterm.Warning.Println("user interrupt")
-		pcli.CheckForUpdates()
+		handleUpdateErr()
 		os.Exit(0)
 	}()
 
 	// Execute cobra
 	if err := rootCmd.Execute(); err != nil {
-		err := pcli.CheckForUpdates()
+		pterm.Error.Println(err)
+		handleUpdateErr()
 		os.Exit(1)
 	}
 
-	pcli.CheckForUpdates()
+	handleUpdateErr()
 }
 
 func init() {
@@ -51,7 +59,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&pcli.DisableUpdateChecking, "disable-update-checks", "", false, "disables update checks")
 
 	// Use https://github.com/pterm/pcli to style the output of cobra.
-	pcli.SetRepo("x0f5c3/boots")
+	_ = pcli.SetRepo("x0f5c3/boots")
 	pcli.SetRootCmd(rootCmd)
 	pcli.Setup()
 
